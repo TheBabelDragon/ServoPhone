@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "feat/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  static-and-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Static checks
+        run: bash tests/test_static.sh
+
+      - name: Start mock ESP32 API
+        run: |
+          python3 tests/mock_esp32_server.py &
+          echo $! > /tmp/mock.pid
+          sleep 1
+
+      - name: API contract tests
+        run: python3 tests/test_api_contract.py
+        env:
+          BASE_URL: http://127.0.0.1:8765
+
+      - name: Stop mock
+        if: always()
+        run: kill $(cat /tmp/mock.pid) 2>/dev/null || true
