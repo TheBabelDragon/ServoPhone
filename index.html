@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1419" />
+  <meta name="description" content="ServoPhone — mobile touchscreen servo controller" />
+  <title>ServoPhone</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="app-header">
+    <h1>ServoPhone</h1>
+    <p class="tagline">Touchscreen servo controller</p>
+  </header>
+
+  <main id="main" class="app-main">
+    <!-- Connection panel -->
+    <section class="panel connection-panel" aria-labelledby="conn-heading">
+      <h2 id="conn-heading">Connection</h2>
+
+      <div class="mode-row" role="group" aria-label="Transport mode">
+        <label class="mode-option">
+          <input type="radio" name="mode" value="simulation" checked />
+          <span>Simulation</span>
+        </label>
+        <label class="mode-option">
+          <input type="radio" name="mode" value="http" />
+          <span>Live HTTP</span>
+        </label>
+      </div>
+
+      <div class="field-row" id="base-url-row">
+        <label for="base-url">ESP32 base URL</label>
+        <input
+          type="url"
+          id="base-url"
+          name="base-url"
+          placeholder="http://192.168.1.50"
+          autocomplete="off"
+          spellcheck="false"
+          inputmode="url"
+        />
+        <p class="hint">No trailing slash. Example: <code>http://192.168.1.50</code> or <code>http://servophone.local</code></p>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" id="btn-connect" class="btn primary">Connect</button>
+        <button type="button" id="btn-disconnect" class="btn" disabled>Disconnect</button>
+      </div>
+
+      <div id="connection-status" class="status-line" role="status" aria-live="polite">
+        Status: <span id="status-text">Simulation (offline)</span>
+      </div>
+    </section>
+
+    <!-- Dial + angle -->
+    <section class="panel control-panel" aria-labelledby="control-heading">
+      <h2 id="control-heading">Angle</h2>
+
+      <div class="dial-wrap">
+        <div
+          id="dial"
+          class="dial"
+          role="slider"
+          tabindex="0"
+          aria-valuemin="0"
+          aria-valuemax="180"
+          aria-valuenow="90"
+          aria-valuetext="90 degrees"
+          aria-label="Servo angle dial"
+        >
+          <div class="dial-face" aria-hidden="true">
+            <div class="dial-ticks"></div>
+            <div class="dial-needle" id="dial-needle"></div>
+            <div class="dial-center"></div>
+          </div>
+        </div>
+        <div class="angle-readout" aria-hidden="true">
+          <span id="angle-display">90</span><span class="unit">°</span>
+        </div>
+      </div>
+
+      <div class="numeric-row">
+        <button type="button" id="btn-dec" class="btn icon" aria-label="Decrease angle by 1 degree">−</button>
+        <label class="sr-only" for="angle-input">Angle in degrees</label>
+        <input
+          type="number"
+          id="angle-input"
+          min="0"
+          max="180"
+          step="1"
+          value="90"
+          inputmode="numeric"
+        />
+        <button type="button" id="btn-inc" class="btn icon" aria-label="Increase angle by 1 degree">+</button>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" id="btn-center" class="btn">Center</button>
+        <button type="button" id="btn-stop" class="btn danger" aria-label="Stop and disable servo">Stop / Disable</button>
+      </div>
+    </section>
+
+    <!-- Limits -->
+    <section class="panel limits-panel" aria-labelledby="limits-heading">
+      <h2 id="limits-heading">Angle limits</h2>
+      <div class="limits-row">
+        <div class="field">
+          <label for="min-angle">Min (°)</label>
+          <input type="number" id="min-angle" min="0" max="180" value="0" step="1" />
+        </div>
+        <div class="field">
+          <label for="max-angle">Max (°)</label>
+          <input type="number" id="max-angle" min="0" max="180" value="180" step="1" />
+        </div>
+        <button type="button" id="btn-apply-limits" class="btn">Apply</button>
+      </div>
+      <p class="hint">Limits are enforced in the UI and validated by the firmware.</p>
+    </section>
+
+    <!-- Command / error status -->
+    <section class="panel status-panel" aria-labelledby="cmd-heading">
+      <h2 id="cmd-heading">Command status</h2>
+      <div id="command-status" class="status-line" role="status" aria-live="polite">
+        Idle
+      </div>
+      <div id="error-message" class="error-box" role="alert" hidden></div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>ServoPhone v0.1 · <a href="docs/connectivity.md">Connectivity notes</a> · Simulation never actuates hardware</p>
+  </footer>
+
+  <script src="assets/js/transport.js"></script>
+  <script src="assets/js/dial.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
